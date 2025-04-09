@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+<p>Bienvenida, selecciona una acción:</p>
+<ul>
+    <li><a href="{{ url_for('vulnerabilities') }}">Consultar vulnerabilidades por criticidad</a></li>
+    <li><a href="{{ url_for('search_keyword') }}">Buscar vulnerabilidades por palabra clave</a></li>
+
+</ul>
+{% endblock %}

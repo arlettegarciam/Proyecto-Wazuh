@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Buscar vulnerabilidades por palabra clave</h2>
+
+<form method="post">
+    <input type="text" name="keyword" placeholder="Ej. Chrome, Apache, etc.">
+    <button type="submit">Buscar</button>
+</form>
+
+{% if results %}
+    <h3>Resultados:</h3>
+    <ul>
+        {% for item in results %}
+            <li>
+                <strong>{{ item.name }}</strong> - {{ item.severity }}
+                <br><small>Agente: {{ item.agent.name }}</small>
+            </li>
+        {% endfor %}
+    </ul>
+{% elif results is not none %}
+    <p>No se encontraron vulnerabilidades con esa palabra clave.</p>
+{% endif %}
+{% endblock %}

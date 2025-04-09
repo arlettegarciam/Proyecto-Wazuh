@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerabilidades</title>
+</head>
+<body>
+
+<h1>Vulnerabilidades</h1>
+
+<form action="{{ url_for('vulnerabilities') }}" method="POST">
+    <label for="severity">Gravedad:</label>
+    <select name="severity" id="severity">
+        <option value="">Selecciona</option>
+        <option value="Low">Baja</option>
+        <option value="Medium">Media</option>
+        <option value="High">Alta</option>
+    </select>
+
+    <label for="agent_name">Nombre del Agente:</label>
+    <input type="text" name="agent_name" id="agent_name">
+
+    <label for="vuln_id">ID de Vulnerabilidad:</label>
+    <input type="text" name="vuln_id" id="vuln_id">
+
+    <label for="date">Fecha:</label>
+    <input type="date" name="date" id="date">
+
+    <button type="submit">Filtrar</button>
+</form>
+
+{% if vulnerabilities %}
+    <h2>Resultados:</h2>
+    <ul>
+        {% for vuln in vulnerabilities %}
+            <li>
+                <strong>{{ vuln['_source']['vulnerability']['id'] }}:</strong>
+                {{ vuln['_source']['vulnerability']['description'] }}
+                <br>
+                <em>Gravedad: {{ vuln['_source']['vulnerability']['severity'] }}</em>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No se encontraron vulnerabilidades.</p>
+{% endif %}
+
+<a href="{{ url_for('logout') }}">Cerrar sesión</a>
+
+</body>
+</html>
