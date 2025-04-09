@@ -3,7 +3,6 @@ import urllib3
 from flask import Flask, render_template, request, redirect, url_for, session
 from base64 import b64encode
 
-
 # Desactiva advertencias de HTTPS (solo para pruebas)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -16,7 +15,6 @@ base_url_manager = f"{protocol}://{host}:{port_manager}"
 # Credenciales para Elasticsearch
 es_username = '0224010'  # Sustituye con tu usuario de Elasticsearch
 es_password = 'Amari110123!'  # Sustituye con tu contraseña de Elasticsearch
-
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
@@ -79,31 +77,28 @@ def vulnerabilities():
             'Content-Type': 'application/json'
         }
 
+        # Construir la consulta de Elasticsearch
+        query = {
+            "query": {
+                "match_all": {}
+            }
+        }
+
+        # Si se envió un filtro de gravedad, añadirlo a la consulta
         if request.method == 'POST':
-            # Obtener los valores de los filtros del formulario
             severity = request.form['severity']
-            agent_name = request.form['agent_name']
-            vuln_id = request.form['vuln_id']
-            date = request.form['date']
-
-            # Construir los parámetros de la consulta
-            params = []
             if severity:
-                params.append(f"severity={severity}")
-            if agent_name:
-                params.append(f"agent_name={agent_name}")
-            if vuln_id:
-                params.append(f"vuln_id={vuln_id}")
-            if date:
-                params.append(f"date={date}")
-
-            # Si hay parámetros de filtro, agregarlos a la URL
-            if params:
-                url += "&" + "&".join(params)
+                query = {
+                    "query": {
+                        "term": {
+                            "vulnerability.severity": severity
+                        }
+                    }
+                }
 
         try:
             # Realiza la solicitud a la API
-            response = requests.get(url, auth=(es_username, es_password), headers=headers, verify=False)
+            response = requests.post(url, auth=(es_username, es_password), headers=headers, json=query, verify=False)
             response.raise_for_status()  # Levantar un error si la respuesta no es 200
 
             # Imprimir la respuesta completa para verificar los datos
@@ -123,7 +118,6 @@ def vulnerabilities():
             print(f"Error en la petición: {e}")
 
     return render_template('vulnerabilities.html', vulnerabilities=vulnerabilities_list)
-
 
 @app.route('/logout')
 def logout():
