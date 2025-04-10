@@ -1,9 +1,80 @@
-h1{
-    font-family: 'Courier New', Courier, monospace;
+body {
+    background: linear-gradient(135deg, #2980b9, #6dd5fa);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
-h2{
-    font-family: 'Courier New', Courier, monospace;
+.login-container {
+    background-color: white;
+    padding: 40px 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    width: 350px;
+    text-align: center;
 }
 
-/*hola*/
+h1 {
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+label {
+    display: block;
+    text-align: left;
+    margin: 10px 0 5px;
+    color: #34495e;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+input[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #2980b9;
+}
+
+button[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    display: block;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    background-color: #0c3e5f;
+}
+
+.app-title{
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #4288ce
+}
