@@ -1,7 +1,11 @@
 import requests
 import urllib3
+import subprocess
+import json
 from flask import Flask, render_template, request, redirect, url_for, session
 from base64 import b64encode
+from flask import flash, redirect, url_for
+
 
 # Desactiva advertencias de HTTPS (solo para pruebas)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -68,63 +72,8 @@ def login():
             return render_template('login.html', error='Error al iniciar sesión.')
     return render_template('login.html')
 
-@app.route('/search_keyword', methods=['GET', 'POST']) 
-def search_keyword():
-    if 'token' not in session:
-        return redirect(url_for('login'))
 
-    keyword_results = []
-
-    if request.method == 'POST':
-        keyword = request.form['keyword']
-
-        if keyword:
-            # URL del índice
-            url = f"https://{host}:9200/wazuh-states-vulnerabilities-ip-172-31-24-173/_search"
-
-            # Autenticación básica en formato base64
-            credentials = f"{es_username}:{es_password}"
-            b64_credentials = b64encode(credentials.encode()).decode()
-
-            headers = {
-                'Authorization': f'Basic {b64_credentials}',
-                'Content-Type': 'application/json'
-            }
-
-            # Consulta: búsqueda por palabra clave en "description", "name" o "host.name"
- # Aquí creamos la consulta de búsqueda usando query_string para búsqueda flexible
-            query = {
-            "query": {
-                "query_string": {
-                    "query": f"*{keyword.lower()}*",
-                    "fields": [
-                        "vulnerability.description",
-                        "vulnerability.id",
-                        "vulnerability.reference",
-                        "package.name",
-                        "host.name"
-                    ],
-                    "analyze_wildcard": True
-                }
-            }
-        }
-
-
-            try:
-                response = requests.post(url, headers=headers, json=query, verify=False)
-                response.raise_for_status()
-
-                hits = response.json().get('hits', {}).get('hits', [])
-                keyword_results = hits if hits else []
-
-            except requests.exceptions.RequestException as e:
-                print(f"Error en la petición: {e}")
-
-    return render_template('search_keyword.html', results=keyword_results)
-
-
-
-
+# Función para obtener las vulnerabilidades
 @app.route('/vulnerabilities', methods=['GET', 'POST'])
 def vulnerabilities():
     if 'token' not in session:
@@ -184,7 +133,190 @@ def vulnerabilities():
 
     return render_template('vulnerabilities.html', vulnerabilities=vulnerabilities_list)
 
-    #Empieza parte del punto 7 
+# Función para obtener vulnerabilidades por palabra clave 
+@app.route('/search_keyword', methods=['GET', 'POST']) 
+def search_keyword():
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    keyword_results = []
+
+    if request.method == 'POST':
+        keyword = request.form['keyword']
+
+        if keyword:
+            # URL del índice
+            url = f"https://{host}:9200/wazuh-states-vulnerabilities-ip-172-31-24-173/_search"
+
+            # Autenticación básica en formato base64
+            credentials = f"{es_username}:{es_password}"
+            b64_credentials = b64encode(credentials.encode()).decode()
+
+            headers = {
+                'Authorization': f'Basic {b64_credentials}',
+                'Content-Type': 'application/json'
+            }
+
+            # Consulta: búsqueda por palabra clave en "description", "name" o "host.name"
+            # Aquí creamos la consulta de búsqueda usando query_string para búsqueda flexible
+            query = {
+            "query": {
+                "query_string": {
+                    "query": f"*{keyword.lower()}*",
+                    "fields": [
+                        "vulnerability.description",
+                        "vulnerability.id",
+                        "vulnerability.reference",
+                        "package.name",
+                        "host.name"
+                    ],
+                    "analyze_wildcard": True
+                }
+            }
+        }
+
+
+            try:
+                response = requests.post(url, headers=headers, json=query, verify=False)
+                response.raise_for_status()
+
+                hits = response.json().get('hits', {}).get('hits', [])
+                keyword_results = hits if hits else []
+
+            except requests.exceptions.RequestException as e:
+                print(f"Error en la petición: {e}")
+
+    return render_template('search_keyword.html', results=keyword_results)
+
+#Funciones para punto 3 agentes 
+@app.route('/agents/upgrade', methods=['GET', 'POST'])
+def upgrade_agents():
+    if 'token' not in session:
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        agents_list = request.form.getlist('agents_list')  # Lista de agentes a actualizar
+        if agents_list:
+            url = f"{base_url_manager}/agents/upgrade"
+            token = get_token_from_file()  # Obtención del token desde el archivo
+            if not token:
+                flash("Token no disponible", "error")
+                return redirect(url_for('login'))
+
+            headers = {
+                'Authorization': f'Bearer {token}',
+                'Content-Type': 'application/json'
+            }
+            data = {
+                "agents": agents_list  # Los agentes a actualizar
+            }
+            
+            try:
+                response = requests.post(url, headers=headers, json=data, verify=False)
+                if response.status_code == 200:
+                    flash('Agentes actualizados correctamente', 'success')
+                else:
+                    flash(f'Error al actualizar agentes: {response.text}', 'error')
+            except requests.exceptions.RequestException as e:
+                flash(f'Error en la petición: {e}', 'error')
+
+    return render_template('agents.html')  # Página de formulario para seleccionar agentes
+
+@app.route('/agents/restart/<agent_id>', methods=['POST'])
+def restart_agent(agent_id):
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    url = f"{base_url_manager}/agents/{agent_id}/restart"
+    token = get_token_from_file()  # Obtención del token desde el archivo
+    if not token:
+        flash("Token no disponible", "error")
+        return redirect(url_for('login'))
+
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        response = requests.post(url, headers=headers, verify=False)
+        if response.status_code == 200:
+            flash(f'Agente {agent_id} reiniciado correctamente', 'success')
+        else:
+            flash(f'Error al reiniciar el agente {agent_id}: {response.text}', 'error')
+    except requests.exceptions.RequestException as e:
+        flash(f'Error en la petición: {e}', 'error')
+
+    return redirect(url_for('list_agents'))  # Redirigir después de reiniciar
+
+@app.route('/agents/delete/<agent_id>', methods=['POST'])
+def delete_agent(agent_id):
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    url = f"{base_url_manager}/agents/{agent_id}/delete"
+    token = get_token_from_file()  # Obtención del token desde el archivo
+    if not token:
+        flash("Token no disponible", "error")
+        return redirect(url_for('login'))
+
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        response = requests.post(url, headers=headers, verify=False)
+        if response.status_code == 200:
+            flash(f'Agente {agent_id} eliminado correctamente', 'success')
+        else:
+            flash(f'Error al eliminar el agente {agent_id}: {response.text}', 'error')
+    except requests.exceptions.RequestException as e:
+        flash(f'Error en la petición: {e}', 'error')
+
+    return redirect(url_for('list_agents'))  # Redirigir después de borrar
+
+@app.route('/agents')
+def list_agents():
+    token = get_token_from_file()
+    if not token:
+        flash("No se pudo obtener el token de autenticación.", "danger")
+        return render_template('agents.html', agents=[])
+
+    # Usamos curl con el token para obtener los agentes
+    try:
+        curl_command = [
+            'curl',
+            '-X', 'GET',
+            f'{base_url_manager}/agents',  # Endpoint para obtener agentes
+            '-H', f'Authorization: Bearer {token}',
+            '-H', 'Content-Type: application/json',
+            '--insecure'  # Esto es para evitar problemas con SSL (si no tienes certificados válidos)
+        ]
+        
+        # Ejecutamos el comando curl
+        result = subprocess.run(curl_command, capture_output=True, text=True)
+
+        # Verificamos si la ejecución fue exitosa
+        if result.returncode == 0:
+            # Convertimos el resultado JSON en un diccionario
+            response_data = json.loads(result.stdout)
+            agents_data = response_data.get('data', {}).get('affected_items', [])
+            if not agents_data:
+                flash("No se encontraron agentes.", "warning")
+        else:
+            flash(f"Error al obtener agentes: {result.stderr}", "danger")
+            agents_data = []
+
+    except subprocess.CalledProcessError as e:
+        flash(f"Error en la solicitud curl: {e}", "danger")
+        agents_data = []
+
+    return render_template('agents.html', agents=agents_data)  # Mostrar lista de agentes
+
+
+
+#Función para mostrar estados del servidor de Wazuh, (punto7)
 @app.route('/wazuh/config', methods=['GET'])
 def get_manager_config():
     if 'token' not in session:
@@ -270,8 +402,6 @@ def get_task_status():
         status_data = {"error": str(e)}
 
     return render_template('task_status.html', status=status_data)
-
-
 
 @app.route('/wazuh_status')
 def wazuh_status():
