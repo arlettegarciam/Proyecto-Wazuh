@@ -187,22 +187,23 @@ def vulnerabilities():
     #Empieza parte del punto 7 
 @app.route('/wazuh/config', methods=['GET'])
 def get_manager_config():
-        if 'token' not in session:
-            return redirect(url_for('login'))
+    if 'token' not in session:
+        return redirect(url_for('login'))
 
-        url = f"{base_url_manager}/manager/configuration"
-        headers = {
-            'Authorization': f'Bearer {get_token_from_file()}',
-            'Content-Type': 'application/json'
-        }
+    url = f"{base_url_manager}/manager/configuration"
+    headers = {
+        'Authorization': f'Bearer {get_token_from_file()}',
+        'Content-Type': 'application/json'
+    }
 
-        try:
-            response = requests.get(url, headers=headers, verify=False)
-            config_data = response.json().get('data', {})
-        except Exception as e:
-            config_data = {"error": str(e)}
+    try:
+        response = requests.get(url, headers=headers, verify=False)
+        config_data = response.json().get('data', {})
+    except Exception as e:
+        config_data = {"error": str(e)}
 
-        return render_template('config.html', config=config_data)
+    return render_template('config.html', config=config_data)
+
 
 @app.route('/wazuh/logs', methods=['GET'])
 def get_logs():
@@ -230,6 +231,7 @@ def get_logs():
 
     return render_template('logs.html', logs=logs)
 
+
 @app.route('/wazuh/groups', methods=['GET'])
 def get_groups():
     if 'token' not in session:
@@ -249,6 +251,7 @@ def get_groups():
 
     return render_template('groups.html', groups=groups)
 
+
 @app.route('/wazuh/tasks/status', methods=['GET'])
 def get_task_status():
     if 'token' not in session:
@@ -267,6 +270,8 @@ def get_task_status():
         status_data = {"error": str(e)}
 
     return render_template('task_status.html', status=status_data)
+
+
 
 @app.route('/wazuh_status')
 def wazuh_status():
@@ -301,6 +306,8 @@ def wazuh_status():
         results['error'] = str(e)
 
     return render_template('wazuh_status.html', results=results)
+
+#termina parte del punto 7
 
 
 

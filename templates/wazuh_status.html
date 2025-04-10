@@ -47,7 +47,7 @@
 
         <!-- Grupos -->
         <section>
-            <h3>👥 Grupos Configurados</h3>
+            <h3>Grupos Configurados</h3>
             {% if results.groups.data.affected_items %}
                 <ul>
                     {% for group in results.groups.data.affected_items %}
@@ -61,7 +61,7 @@
 
         <!-- Estado de Tareas -->
         <section>
-            <h3>🛠️ Estado de Tareas</h3>
+            <h3>Estado de Tareas</h3>
             <ul>
                 {% for key, value in results.tasks_status.data.items() %}
                     <li><strong>{{ key | capitalize }}:</strong> {{ value }}</li>
