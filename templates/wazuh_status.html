@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2>Estado del Servidor Wazuh</h2>
+
+    {% if results.error %}
+        <p style="color: red;">Error al obtener datos: {{ results.error }}</p>
+    {% else %}
+
+        <!-- Configuración del Manager -->
+        <section>
+            <h3>Configuración del Manager</h3>
+            <ul>
+                <li><strong>Log Alert Level:</strong> {{ results.configuration.data.affected_items[0].alerts.log_alert_level }}</li>
+                <li><strong>Email Alert Level:</strong> {{ results.configuration.data.affected_items[0].alerts.email_alert_level }}</li>
+                <li><strong>Puerto de Autenticación:</strong> {{ results.configuration.data.affected_items[0].auth.port }}</li>
+                <li><strong>SSL Auto Negotiate:</strong> {{ results.configuration.data.affected_items[0].auth.ssl_auto_negotiate }}</li>
+                <li><strong>Cifrado:</strong> {{ results.configuration.data.affected_items[0].auth.ciphers }}</li>
+                <li><strong>Purge:</strong> {{ results.configuration.data.affected_items[0].auth.purge }}</li>
+            </ul>
+        </section>
+
+        <!-- Resumen de Logs -->
+        <section>
+            <h3>Resumen de Logs</h3>
+            <ul>
+                {% for level, count in results.logs_summary.data.items() %}
+                    <li><strong>{{ level | capitalize }}:</strong> {{ count }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <!-- Logs -->
+        <section>
+            <h3>Últimos Logs</h3>
+            <ul>
+                {% for log in results.logs.data.affected_items %}
+                    <li>
+                        <strong>Timestamp:</strong> {{ log.timestamp }} <br>
+                        <strong>Tag:</strong> {{ log.tag }} <br>
+                        <strong>Nivel:</strong> {{ log.level }} <br>
+                        <strong>Descripción:</strong> {{ log.description }} <br>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <!-- Grupos -->
+        <section>
+            <h3>Grupos Configurados</h3>
+            {% if results.groups.data.affected_items %}
+                <ul>
+                    {% for group in results.groups.data.affected_items %}
+                        <li>{{ group.name }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay grupos configurados.</p>
+            {% endif %}
+        </section>
+
+        <!-- Estado de Tareas -->
+        <section>
+            <h3>Estado de Tareas</h3>
+            <ul>
+                {% for key, value in results.tasks_status.data.items() %}
+                    <li><strong>{{ key | capitalize }}:</strong> {{ value }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+    {% endif %}
+{% endblock %}

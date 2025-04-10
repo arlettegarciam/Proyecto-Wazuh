@@ -17,18 +17,20 @@
         
 
         <a href="{{ url_for('vulnerabilities') }}">
-            <button>1. Buscar Vulnerabilidades</button>
+            <button>1.Buscar Vulnerabilidades</button>
         </a>
-        
+
         <a href="{{ url_for('search_by_keyword') }}">
             <button>2. Buscar por Palabra Clave</button>
         </a>
-        
-        
+
         <a href="{{ url_for('top_agents') }}">
             <button>6. Mostar top 10 agentes con mas Vulnerabilidades</button>
         </a>
-        
+
+        <a href="{{ url_for('wazuh_status') }}">
+            <button>Estado del Servidor</button>
+        </a>
 
         <a href="{{ url_for('logout') }}">
             <button>Cerrar sesión</button>
