@@ -19,6 +19,23 @@ es_password = 'Amari110123!'  # Sustituye con tu contraseña de Elasticsearch
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
 
+
+@app.route('/dashboard')
+def dashboard():
+    if 'token' not in session:
+        return redirect(url_for('login'))
+    
+    return render_template('dashboard.html')
+
+@app.route('/search_by_keyword', methods=['GET', 'POST'])
+def search_by_keyword():
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    # Aquí iría la lógica para la búsqueda por palabra clave
+
+    return render_template('search_by_keyword.html')
+
 # Función para leer el token desde el archivo
 def get_token_from_file():
     try:
@@ -55,7 +72,7 @@ def login():
             with open('token.txt', 'w') as file:
                 file.write(token)
             session['token'] = token
-            return redirect(url_for('vulnerabilities'))  # Redirigir a la página de vulnerabilidades
+            return redirect(url_for('dashboard'))  # Redirigir al dashboard después del login
         else:
             return render_template('login.html', error='Error al iniciar sesión.')
     return render_template('login.html')

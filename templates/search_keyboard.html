@@ -1,23 +1,29 @@
-{% extends "layout.html" %}
-{% block content %}
-<h2>Buscar vulnerabilidades por palabra clave</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsqueda por Palabra Clave</title>
+</head>
+<body>
 
-<form method="post">
-    <input type="text" name="keyword" placeholder="Ej. Chrome, Apache, etc.">
+<h1>Búsqueda por Palabra Clave</h1>
+
+<form method="POST">
+    <label for="keyword">Palabra clave:</label>
+    <input type="text" name="keyword" id="keyword" required>
     <button type="submit">Buscar</button>
 </form>
 
+<!-- Aquí puedes mostrar los resultados de la búsqueda por palabra clave -->
 {% if results %}
-    <h3>Resultados:</h3>
+    <h2>Resultados de la Búsqueda:</h2>
     <ul>
-        {% for item in results %}
-            <li>
-                <strong>{{ item.name }}</strong> - {{ item.severity }}
-                <br><small>Agente: {{ item.agent.name }}</small>
-            </li>
+        {% for result in results %}
+            <li>{{ result }}</li>
         {% endfor %}
     </ul>
-{% elif results is not none %}
-    <p>No se encontraron vulnerabilidades con esa palabra clave.</p>
 {% endif %}
-{% endblock %}
+
+</body>
+</html>

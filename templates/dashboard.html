@@ -1,9 +1,25 @@
-{% extends "layout.html" %}
-{% block content %}
-<p>Bienvenida, selecciona una acción:</p>
-<ul>
-    <li><a href="{{ url_for('vulnerabilities') }}">Consultar vulnerabilidades por criticidad</a></li>
-    <li><a href="{{ url_for('search_keyword') }}">Buscar vulnerabilidades por palabra clave</a></li>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
 
-</ul>
-{% endblock %}
+<h1>Bienvenido al Dashboard</h1>
+
+<a href="{{ url_for('vulnerabilities') }}">
+    <button>Buscar Vulnerabilidades</button>
+</a>
+
+<a href="{{ url_for('search_by_keyword') }}">
+    <button>Buscar por Palabra Clave</button>
+</a>
+
+<a href="{{ url_for('logout') }}">
+    <button>Cerrar sesión</button>
+</a>
+
+</body>
+</html>
