@@ -1,0 +1,79 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    
+}
+
+table, th, td {
+    border: 1px solid #ddd; /* Borde gris claro para las celdas */
+}
+
+th, td {
+    padding: 5px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2; /* Fondo gris claro para los encabezados */
+}
+
+body {
+    background: linear-gradient(135deg, #0b5789, #3aa6dc);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/*
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+
+th {
+    background-color: #3498db;
+    color: white;
+}*/
+
+.dashboard-container {
+    background-color: white;
+    padding: 40px 100px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    width: 400px;
+    text-align: center;
+}
+
+.dashboard-container h1 {
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+.dashboard-container a {
+    display: block;
+    margin-bottom: 15px;
+    text-decoration: none;
+}
+
+.dashboard-container button {
+    display: block;        /* Asegura que el botón sea de bloque*/ 
+    background-color: #3498db;
+    color: white;
+    padding: 12px;
+    width: 50%;           /* Ocupa todo el ancho del contenedor*/ 
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 0 auto;        /* Centrado */
+    transition: background-color 0.3s ease;
+}
+
+.dashboard-container button:hover {
+    background-color: #43c3f6;
+}
