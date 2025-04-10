@@ -71,3 +71,10 @@ button[type="submit"] {
 button[type="submit"]:hover {
     background-color: #0c3e5f;
 }
+
+.app-title{
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #4288ce
+}
