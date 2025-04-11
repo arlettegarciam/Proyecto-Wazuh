@@ -134,7 +134,6 @@ def vulnerabilities():
 
     return render_template('vulnerabilities.html', vulnerabilities=vulnerabilities_list)
 
-<<<<<<< HEAD
 # Función para obtener vulnerabilidades por palabra clave 
 @app.route('/search_keyword', methods=['GET', 'POST']) 
 def search_keyword():
@@ -319,7 +318,6 @@ def list_agents():
 
 
 #Función para mostrar estados del servidor de Wazuh, (punto7)
-=======
 #
 @app.route('/top_agents')
 def top_agents():
