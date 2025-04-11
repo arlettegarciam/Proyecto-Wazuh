@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Agentes</title>
+</head>
+<body>
+    <h1>Agentes</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('upgrade_agents') }}">
+        <table border="1">
+            <tr>
+                <th>Seleccionar</th>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            {% for agent in agents %}
+            <tr>
+                <td><input type="checkbox" name="agents_list" value="{{ agent.id }}"></td>
+                <td>{{ agent.id }}</td>
+                <td>{{ agent.name }}</td>
+                <td>{{ agent.status }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('restart_agent', agent_id=agent.id) }}" style="display:inline;">
+                        <button type="submit">Reiniciar</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('delete_agent', agent_id=agent.id) }}" style="display:inline;">
+                        <button type="submit">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Actualizar agentes seleccionados</button>
+    </form>
+</body>
+</html>
