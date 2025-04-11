@@ -1,4 +1,5 @@
 import requests
+import json
 import urllib3
 import subprocess
 import json
@@ -133,6 +134,7 @@ def vulnerabilities():
 
     return render_template('vulnerabilities.html', vulnerabilities=vulnerabilities_list)
 
+<<<<<<< HEAD
 # Función para obtener vulnerabilidades por palabra clave 
 @app.route('/search_keyword', methods=['GET', 'POST']) 
 def search_keyword():
@@ -317,6 +319,69 @@ def list_agents():
 
 
 #Función para mostrar estados del servidor de Wazuh, (punto7)
+=======
+#
+@app.route('/top_agents')
+def top_agents():
+
+    # Construcción del token de Elasticsearch en base64
+    basic_auth = f"{es_username}:{es_password}"
+    b64_auth = b64encode(basic_auth.encode()).decode()
+
+    url = "https://54.218.56.253:9200/wazuh-states-vulnerabilities-*/_search"
+
+    headers = {
+        'Authorization': f'Basic {b64_auth}',  # usa token de sesión
+        'Content-Type': 'application/json'
+    }
+
+    query = {
+        "size": 0,
+        "aggs": {
+            "by_agent": {
+                "terms": {
+                    "field": "agent.id",
+                    "size": 10,
+                    "order": { "_count": "desc" }
+                },
+                "aggs": {
+                    "agent_info": {
+                        "top_hits": {
+                            "size": 1,
+                            "_source": ["agent.id", "agent.name"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    try:
+        response = requests.get(url, headers=headers, json=query, auth=(es_username, es_password), verify=False)
+        response.raise_for_status()
+        data = response.json()
+
+        # 👇 Esto imprime la respuesta completa en consola
+        print(json.dumps(data, indent=2))
+
+    except Exception as e:
+        print(f"Error en la petición a Elasticsearch: {e}")
+        return "Error consultando Elasticsearch"
+
+    # Procesamos los datos
+    top_agents = []
+    for bucket in data['aggregations']['by_agent']['buckets']:
+        agent_id = bucket['key']
+        agent_name = bucket['agent_info']['hits']['hits'][0]['_source'].get('agent', {}).get('name', 'N/A')
+        count = bucket['doc_count']
+        top_agents.append({
+            "id": agent_id,
+            "name": agent_name,
+            "count": count
+        })
+
+    return render_template("top_agents.html", agents=top_agents)
+    #Empieza parte del punto 7 
 @app.route('/wazuh/config', methods=['GET'])
 def get_manager_config():
     if 'token' not in session:

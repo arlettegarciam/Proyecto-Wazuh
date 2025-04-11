@@ -4,26 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleDash.css') }}">
+   
 </head>
 <body>
+    <div class="dashboard-container"> 
+        <h1>Bienvenido al Dashboard</h1>
 
-<h1>Bienvenido al Dashboard</h1>
+        <h2 class="select-Op">Seleccione una opción:</h2>
 
-<a href="{{ url_for('vulnerabilities') }}">
-    <button>Buscar Vulnerabilidades</button>
-</a>
+        
 
-<a href="{{ url_for('search_keyword') }}">
-    <button>Buscar por Palabra Clave</button>
-</a>
+        <a href="{{ url_for('vulnerabilities') }}">
+            <button>1.Buscar Vulnerabilidades</button>
+        </a>
 
-<a href="{{ url_for('wazuh_status') }}">
-    <button>Estado del Servidor</button>
-</a>
+        <a href="{{ url_for('search_keyword') }}">
+            <button>2. Buscar por Palabra Clave</button>
+        </a>
 
-<a href="{{ url_for('logout') }}">
-    <button>Cerrar sesión</button>
-</a>
+        <a href="{{ url_for('top_agents') }}">
+            <button>6. Mostar top 10 agentes con mas Vulnerabilidades</button>
+        </a>
 
+        <a href="{{ url_for('wazuh_status') }}">
+            <button>Estado del Servidor</button>
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            <button>Cerrar sesión</button>
+        </a>
+    </div>
 </body>
 </html>
